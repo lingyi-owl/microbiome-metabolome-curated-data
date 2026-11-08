@@ -1,7 +1,7 @@
 # BenchmarkData
 
 Harmonised inputs for benchmarking metagenome-to-metabolome abundance prediction tools
-(e.g. MelonnPan, SparseNED, MiMeNet, mNODE, MMINP, LOCATE, DMoVGPE, MICOM, AGORA2/mgPipe, SIMBA-GNN).
+(e.g. MelonnPan, SparseNED, MiMeNet, mNODE, LOCATE, DMoVGPE, SIMBA-GNN).
 
 ## Contents
 
