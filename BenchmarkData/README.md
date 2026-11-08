@@ -28,22 +28,22 @@ mtb = pd.concat([pd.read_csv(f"metabolite_clr.part{i}of5.tsv.gz", sep="\t", inde
 ```
 `preprocessing_log.tsv` records per-dataset counts and replacement values; `preprocess_dmovgpe.py` is the code.
 
-| DMoVGPE name | Folder | Samples | Microbe input | Taxa (in → kept) | Metabolites (in → kept) | Metabolite input scale |
-|---|---|---|---|---|---|---|
-| MFGM | `HE_INFANTS_MFGM_2019` | 277 | `genera.tsv` (genus) | 295 → 13 | 120 → 81 | linear |
-| ASD | `KANG_AUTISM_2017` | 44 | `genera.tsv` (genus) | 321 → 55 | 61 → 53 | linear |
-| INFANTS_DIABETES | `KOSTIC_INFANTS_DIABETES_2015` | 103 | `genera.tsv` (genus) | 584 → 33 | 184 → 175 | linear |
-| PRETERMS | `WANDRO_PRETERMS_2018` | 75 | `genera.tsv` (genus) | 82 → 4 | 453 → 453 | linear |
-| SINHA_CRC | `SINHA_CRC_2016` | 131 | `genera.tsv` (genus) | 86 → 31 | 530 → 530 | log |
-| ADENOMAS | `KIM_ADENOMAS_2020` | 240 | `genera.tsv` (genus) | 499 → 54 | 462 → 462 | log |
-| BIO_ML | `POYET_BIO_ML_2019` | 164 | `genera.tsv` (genus) | 353 → 59 | 489 → 471 | linear |
-| IBD_RELATIVES | `JACOBS_IBD_FAMILIES_2016` | 90 | `genera.tsv` (genus) | 508 → 117 | 4626 → 1052 | linear |
-| IBS | `MARS_IBS_2020` | 444 | `species.tsv` (species) | 11513 → 1186 | 43 → 39 | linear |
-| CRC | `YACHIDA_CRC_2019` | 347 | `species.tsv.zip` (species) | 57702 → 6119 | 450 → 164 | linear |
-| GC | `ERAWIJANTARI_GASTRIC_CANCER_2020` | 96 | `species.tsv` (species) | 48243 → 6441 | 524 → 144 | linear |
-| ESRD | `WANG_ESRD_2020` | 287 | `species.tsv` (species) | 56961 → 7491 | 276 → 276 | linear |
-| IBD | `FRANZOSA_IBD_2019` | 220 | `species.tsv` (species) | 55882 → 5604 | 8848 → 7156 | linear |
-| IBDMDB | `iHMP_IBDMDB_2019` | 382 | `species.tsv` (species) | 42871 → 2875 | 81867 → 50481 | linear |
+| Dataset | Folder | Samples | Microbe input | Taxa (in → kept) | Metabolites (in → kept) | Metabolite input scale | Proteome availability (exact / fallback / none) |
+|---|---|---|---|---|---|---|---|
+| MFGM | `HE_INFANTS_MFGM_2019` | 277 | `genera.tsv` (genus) | 295 → 13 | 120 → 81 | linear | 10 / 2 / 1 |
+| ASD | `KANG_AUTISM_2017` | 44 | `genera.tsv` (genus) | 321 → 55 | 61 → 53 | linear | 27 / 20 / 8 |
+| INFANTS_DIABETES | `KOSTIC_INFANTS_DIABETES_2015` | 103 | `genera.tsv` (genus) | 584 → 33 | 184 → 175 | linear | 23 / 9 / 1 |
+| PRETERMS | `WANDRO_PRETERMS_2018` | 75 | `genera.tsv` (genus) | 82 → 4 | 453 → 453 | linear | 3 / 0 / 1 |
+| SINHA_CRC | `SINHA_CRC_2016` | 131 | `genera.tsv` (genus) | 86 → 31 | 530 → 530 | log | 18 / 5 / 8 |
+| ADENOMAS | `KIM_ADENOMAS_2020` | 240 | `genera.tsv` (genus) | 499 → 54 | 462 → 462 | log | 28 / 21 / 5 |
+| BIO_ML | `POYET_BIO_ML_2019` | 164 | `genera.tsv` (genus) | 353 → 59 | 489 → 471 | linear | 30 / 27 / 2 |
+| IBD_RELATIVES | `JACOBS_IBD_FAMILIES_2016` | 90 | `genera.tsv` (genus) | 508 → 117 | 4626 → 1052 | linear | 62 / 43 / 12 |
+| IBS | `MARS_IBS_2020` | 444 | `species.tsv` (species) | 11513 → 1186 | 43 → 39 | linear | 1186 / 0 / 0 |
+| CRC | `YACHIDA_CRC_2019` | 347 | `species.tsv.zip` (species) | 57702 → 6119 | 450 → 164 | linear | 6119 / 0 / 0 |
+| GC | `ERAWIJANTARI_GASTRIC_CANCER_2020` | 96 | `species.tsv` (species) | 48243 → 6441 | 524 → 144 | linear | 6441 / 0 / 0 |
+| ESRD | `WANG_ESRD_2020` | 287 | `species.tsv` (species) | 56961 → 7491 | 276 → 276 | linear | 7491 / 0 / 0 |
+| IBD | `FRANZOSA_IBD_2019` | 220 | `species.tsv` (species) | 55882 → 5604 | 8848 → 7156 | linear | 5604 / 0 / 0 |
+| IBDMDB | `iHMP_IBDMDB_2019` | 382 | `species.tsv` (species) | 42871 → 2875 | 81867 → 50481 | linear | 2875 / 0 / 0 |
 
 ## Preprocessing
 
