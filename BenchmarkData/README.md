@@ -15,7 +15,7 @@ One folder per dataset of `data/processed_data/`, preprocessed following the DMo
 | `metabolite_filtered.tsv` | metabolite abundance (original scale) after the >50%-zero filter |
 | `metabolite_clr.tsv` | after filter, zero replacement and CLR |
 | `metadata.tsv` | sample metadata (incl. `Study.Group`) |
-| `microbe_proteom.csv` | one row per `microbe_clr.tsv` column: `gtdb_lineage` (exact column header), `gtdb_release` (r207 / r202) and `protein_faa_in_archive` (path inside `gtdb_proteins_aa_reps_<release>.tar.gz`). Shotgun datasets: GTDB species representative; 16S datasets: representative of the genus's GTDB type species. Empty release/path = no type-species genome or unresolved genus |
+| `microbe_proteom.csv` | one row per `microbe_clr.tsv` column: `gtdb_lineage` (exact column header); `proteome_match` = `exact` (shotgun: GTDB species representative; 16S: representative of the genus's GTDB type species), `fallback` (16S genus with no type-species genome in GTDB; path left empty) or `none` (unresolved genus); `gtdb_release` (r207 / r202) and `protein_faa_in_archive` (path inside `gtdb_proteins_aa_reps_<release>.tar.gz`), filled for `exact` rows |
 
 All tables are samples × features, first column `Sample`, and share the same sample order within a dataset.
 Files larger than 25 MB are gzip-compressed (`.tsv.gz`; `pandas.read_csv` reads them directly).
