@@ -48,9 +48,8 @@ mtb = pd.concat([pd.read_csv(f"metabolite_clr.part{i}of5.tsv.gz", sep="\t", inde
 
 1. **NaN → 0**, as in the released `DMoVGPE.py` (`np.nan_to_num(X, nan=0.0)`).
 2. **Feature filter:** keep a taxon or metabolite only if ≤ 50% of samples are zero.
-3. **Zero replacement:** multiplicative replacement (Martín-Fernández et al. 2003, *Math Geol* 35:253) on the closed
-   composition, with a per-feature value δ<sub>j</sub> = 0.65 × the smallest non-zero value of feature *j*
-   (65% of the empirical detection limit). Non-zero parts are shrunk so each sample still sums to 1.
+3. **Zero replacement:** each table is closed to relative abundance (rows sum to 1); every zero cell is then set to a
+   fixed pseudocount of **1e-5**. Non-zero cells are unchanged.
 4. **CLR:** clr(x)<sub>j</sub> = log x<sub>j</sub> − mean<sub>k</sub>(log x<sub>k</sub>) (natural log).
 
 ## Deviations and assumptions
@@ -58,8 +57,11 @@ mtb = pd.concat([pd.read_csv(f"metabolite_clr.part{i}of5.tsv.gz", sep="\t", inde
 - **Taxonomic level.** DMoVGPE does not state it. Matching its Table 1 feature counts indicates genus (`genera.tsv`)
   for the 16S datasets and species (`species.tsv`) for the shotgun datasets; this mapping is used here.
 - **Zero-replacement value.** DMoVGPE reports only "a zero-replacement function"; its value is neither in the paper
-  nor in the released code. scikit-bio's default (δ = 1/D², D = number of features) was rejected, because for the
-  low-dimensional 16S tables it exceeds the smallest observed abundance in 42–99% of samples and so inverts ranks.
+  nor in the released code. A fixed pseudocount of 1e-5 on relative abundance is used here. Note that 1e-5 is larger
+  than the smallest observed relative abundance in most samples of the shotgun species tables (CRC, GC, ESRD, IBD,
+  IBDMDB: 98–100% of samples with zeros; IBS: 51%) and of several metabolite tables, so in those samples replaced zeros
+  rank above some observed values. `preprocessing_log.tsv` reports this per dataset. An earlier version
+  (commit a40c442) used multiplicative replacement with 0.65 × each feature's minimum non-zero value instead.
 - **Log-scaled metabolite tables.** `SINHA_CRC_2016` and `KIM_ADENOMAS_2020` metabolites are supplied already
   log-transformed (about half the values are negative). They get no zero replacement, and CLR is applied in log
   space as x − rowmean(x), which equals clr(exp(x)).
