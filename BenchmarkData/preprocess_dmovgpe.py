@@ -20,11 +20,13 @@ Choices / assumptions (DMoVGPE does not publish its preprocessing code):
   * NaN -> 0 before filtering (as in DMoVGPE.py: np.nan_to_num(X, nan=0.0)).
   * Zero test: a feature is kept if its fraction of zeros is <= 0.5.
   * Zero replacement: DMoVGPE only says "a zero-replacement function"; the value
-    is not reported and is absent from the released code. Here each zero cell of
-    the closed (relative-abundance, rows sum to 1) table is set to a fixed
-    pseudocount of 1e-5 (PSEUDOCOUNT); non-zero cells are left unchanged.
-    Metabolite tables on a linear scale are closed to relative abundance first,
-    so the pseudocount is on the same scale for microbes and metabolites.
+    is not reported and is absent from the released code. We use multiplicative
+    replacement (Martin-Fernandez et al. 2003, Math Geol 35:253) on the closed
+    composition with a per-feature delta_j = 0.65 x (smallest non-zero value of
+    feature j), i.e. 65% of the empirical detection limit. Non-zero parts in a
+    row are shrunk by (1 - sum of deltas replaced in that row) so rows sum to 1.
+    (scikit-bio's default delta = 1/D^2 was rejected: for the low-dimensional 16S
+    tables it exceeds the smallest observed abundance in 42-99% of samples.)
   * Metabolite tables that are already log-scaled (contain negative values:
     SINHA_CRC_2016, KIM_ADENOMAS_2020) are not zero-replaced; CLR is applied in
     log space as x - rowmean(x), which equals clr(exp(x)).
@@ -45,13 +47,22 @@ def closure(df: pd.DataFrame) -> pd.DataFrame:
     return df.div(df.sum(axis=1), axis=0)
 
 
-PSEUDOCOUNT = 1e-5
+DL_FRACTION = 0.65
 
 
-def pseudocount_replacement(df: pd.DataFrame, pseudo: float = PSEUDOCOUNT) -> pd.DataFrame:
-    """Close rows to relative abundance, then set zero cells to `pseudo`."""
+def replacement_deltas(closed: pd.DataFrame) -> np.ndarray:
+    """Per-feature delta_j = DL_FRACTION * min non-zero value of feature j."""
+    return DL_FRACTION * closed.where(closed > 0).min(axis=0).values
+
+
+def multiplicative_replacement(df: pd.DataFrame) -> pd.DataFrame:
     xc = closure(df)
-    return xc.mask(xc == 0, pseudo)
+    delta = replacement_deltas(xc)
+    x = xc.values
+    z = x == 0
+    shrink = 1 - (z * delta[None, :]).sum(axis=1, keepdims=True)
+    out = np.where(z, delta[None, :], x * shrink)
+    return pd.DataFrame(out, index=df.index, columns=df.columns)
 
 
 def clr(df: pd.DataFrame) -> pd.DataFrame:
@@ -83,13 +94,12 @@ def process_pair(mic: pd.DataFrame, mtb: pd.DataFrame):
     mic_f, mtb_f = mic_f.loc[~bad], mtb_f.loc[~bad]
     log.update(samples_dropped_all_zero=int(bad.sum()), n_samples_out=len(mic_f),
                microbe_features_out=mic_f.shape[1], metabolite_features_out=mtb_f.shape[1],
-               pseudocount=PSEUDOCOUNT,
-               microbe_frac_zero_cells_replaced=float((mic_f == 0).to_numpy().mean()),
-               metabolite_frac_zero_cells_replaced=None if mtb_is_log else float((mtb_f == 0).to_numpy().mean()),
+               microbe_delta_median=float(np.median(replacement_deltas(closure(mic_f)))),
+               metabolite_delta_median=None if mtb_is_log else float(np.median(replacement_deltas(closure(mtb_f)))),
                microbe_zero_frac_after_filter=float((mic_f == 0).to_numpy().mean()),
                metabolite_zero_frac_after_filter=float((mtb_f == 0).to_numpy().mean()))
 
-    mic_clr = clr(pseudocount_replacement(mic_f))
-    mtb_clr = clr_logspace(mtb_f) if mtb_is_log else clr(pseudocount_replacement(mtb_f))
+    mic_clr = clr(multiplicative_replacement(mic_f))
+    mtb_clr = clr_logspace(mtb_f) if mtb_is_log else clr(multiplicative_replacement(mtb_f))
     return dict(microbe_filtered=closure(mic_f), microbe_clr=mic_clr,
                 metabolite_filtered=mtb_f, metabolite_clr=mtb_clr), log
