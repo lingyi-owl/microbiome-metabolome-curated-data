@@ -8,14 +8,14 @@ Harmonised inputs for benchmarking metagenome-to-metabolome abundance prediction
 One folder per dataset of `data/processed_data/`, preprocessed following the DMoVGPE Methods
 (Weng et al. 2025, *BMC Bioinformatics* 26:93, doi:10.1186/s12859-025-06110-7):
 
-| File | Content |
-|---|---|
-| `microbe_filtered.tsv` | taxon relative abundance after the >50%-zero filter, re-closed to sum 1 per sample |
-| `microbe_clr.tsv` | after filter, zero replacement and CLR |
-| `metabolite_filtered.tsv` | metabolite abundance (original scale) after the >50%-zero filter |
-| `metabolite_clr.tsv` | after filter, zero replacement and CLR |
-| `metadata.tsv` | sample metadata (incl. `Study.Group`) |
-| `microbe_proteom.csv` | one row per `microbe_clr.tsv` column: `gtdb_lineage` (exact column header); `proteome_match` = `exact` (shotgun: GTDB species representative; 16S: representative of the genus's GTDB type species), `fallback` (16S genus with no type-species genome in GTDB; uses the genus representative with the highest CheckM completeness − 5 × contamination) or `none` (unresolved genus; no proteome); `gtdb_release` (r207 / r202) and `protein_faa_in_archive` (path inside `gtdb_proteins_aa_reps_<release>.tar.gz`), filled for `exact` and `fallback` rows |
+| File | Content | SIMBA-GNN usage |
+|---|---|---|
+| `microbe_filtered.tsv` | taxon relative abundance after the >50%-zero filter, re-closed to sum 1 per sample |  |
+| `microbe_clr.tsv` | after filter, zero replacement and CLR | microbial abundance |
+| `metabolite_filtered.tsv` | metabolite abundance (original scale) after the >50%-zero filter |  |
+| `metabolite_clr.tsv` | after filter, zero replacement and CLR | metabolite abundance |
+| `metadata.tsv` | sample metadata (incl. `Study.Group`) |  |
+| `microbe_proteom.csv` | one row per `microbe_clr.tsv` column: `gtdb_lineage` (exact column header); `proteome_match` = `exact` (shotgun: GTDB species representative; 16S: representative of the genus's GTDB type species), `fallback` (16S genus with no type-species genome in GTDB; uses the genus representative with the highest CheckM completeness − 5 × contamination) or `none` (unresolved genus; no proteome); `gtdb_release` (r207 / r202) and `protein_faa_in_archive` (path inside `gtdb_proteins_aa_reps_<release>.tar.gz`), filled for `exact` and `fallback` rows | strings in `protein_faa_in_archive` used to fetch the protein sequences from the GTDB database |
 
 All tables are samples × features, first column `Sample`, and share the same sample order within a dataset.
 Files larger than 25 MB are gzip-compressed (`.tsv.gz`; `pandas.read_csv` reads them directly).
