@@ -17,6 +17,8 @@ One folder per dataset of `data/processed_data/`, preprocessed following the DMo
 | `metadata.tsv` | sample metadata (incl. `Study.Group`) |  |
 | `microbe_proteom.csv` | one row per `microbe_clr.tsv` column: `gtdb_lineage` (exact column header); `proteome_match` = `exact` (shotgun: GTDB species representative; 16S: representative of the genus's GTDB type species), `fallback` (16S genus with no type-species genome in GTDB; uses the genus representative with the highest CheckM completeness − 5 × contamination) or `none` (unresolved genus; no proteome); `gtdb_release` (r207 / r202) and `protein_faa_in_archive` (path inside `gtdb_proteins_aa_reps_<release>.tar.gz`), filled for `exact` and `fallback` rows | strings in `protein_faa_in_archive` used to fetch the protein sequences from the GTDB database |
 
+The top-level file `microbe_proteom_unique.csv` lists every unique microbe across the 14 `microbe_proteom.csv` files (8,371 rows: 8,303 `exact`, 49 `fallback`, 19 `none`), with the same columns (`gtdb_lineage`, `proteome_match`, `gtdb_release`, `protein_faa_in_archive`). Use it to fetch each proteome once: group the `protein_faa_in_archive` values by `gtdb_release` and extract them in one pass per archive, e.g. `curl -sL <archive URL> | tar -xzf - -T list_r207.txt`. Some genomes are shared by several lineages (e.g. a 16S genus and a shotgun species), so there are 8,339 distinct (release, file) pairs to download.
+
 All tables are samples × features, first column `Sample`, and share the same sample order within a dataset.
 Files larger than 25 MB are gzip-compressed (`.tsv.gz`; `pandas.read_csv` reads them directly).
 The two `iHMP_IBDMDB_2019` metabolite tables (50,481 metabolites) are split by columns into five parts
